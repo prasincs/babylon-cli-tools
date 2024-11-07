@@ -1,11 +1,17 @@
 package cmd
 
 import (
+	"bytes"
+	"encoding/hex"
+	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/babylonlabs-io/babylon/btcstaking"
 	"github.com/btcsuite/btcd/btcec/v2"
 	"github.com/btcsuite/btcd/btcutil"
+	"github.com/btcsuite/btcd/chaincfg"
+	"github.com/btcsuite/btcd/rpcclient"
 	"github.com/btcsuite/btcd/txscript"
 	"github.com/btcsuite/btcd/wire"
 	"github.com/spf13/cobra"
@@ -65,6 +71,59 @@ type spendStakeTxInfo struct {
 	fee                    btcutil.Amount
 }
 
+func parseRPCFlagsAndGetBTCClient(cmd *cobra.Command, btcParams *chaincfg.Params) (*btcclient.BtcClient, *rpcclient.Client, error) {
+	host, err := cmd.Flags().GetString(FlagStakerWalletAddressHost)
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if host == "" {
+		return nil, nil, nil
+	}
+
+	rpcUser, err := cmd.Flags().GetString(FlagStakerWalletRpcUser)
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	rpcPass, err := cmd.Flags().GetString(FlagStakerWalletRpcPass)
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	client, err := btcclient.NewBtcClient(&config.BtcConfig{
+		Host:    host,
+		User:    rpcUser,
+		Pass:    rpcPass,
+		Network: btcParams.Name,
+	})
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// same as btcConfigToConnConfig that NewBtcClient uses but since it's not exposed, we need to create it again
+	connConfig := &rpcclient.ConnConfig{
+		Host:                 host,
+		User:                 rpcUser,
+		Pass:                 rpcPass,
+		DisableTLS:           true,
+		DisableConnectOnNew:  true,
+		DisableAutoReconnect: false,
+		HTTPPostMode:         true,
+	}
+
+	rpcClient, err := rpcclient.New(connConfig, nil)
+
+	if err != nil {
+		return nil, nil, err
+	}
+	return client, rpcClient, nil
+}
+
 var createWithdrawCmd = &cobra.Command{
 	Use:   "create-phase1-withdaw-request",
 	Short: "create phase1 withdraw tx ",
@@ -81,10 +140,39 @@ var createWithdrawCmd = &cobra.Command{
 			return err
 		}
 
-		stakingTx, _, err := newBTCTxFromHex(mustGetStringFlag(cmd, FlagStakingTxHex))
+		stakingTxHex := mustGetStringFlag(cmd, FlagStakingTxHex)
+
+		stakingTx, _, err := newBTCTxFromHex(stakingTxHex)
 
 		if err != nil {
-			return err
+			if strings.Contains(err.Error(), "witness tx but flag byte is 02") {
+				_, rpcClient, err := parseRPCFlagsAndGetBTCClient(cmd, btcParams)
+				stakingTxBytes, err := hex.DecodeString(stakingTxHex)
+
+				if err != nil {
+					return err
+				}
+				rawTxResult, err := rpcClient.DecodeRawTransaction(stakingTxBytes)
+
+				if err != nil {
+					return err
+				}
+
+				// Convert *btcjson.TxRawResult to *wire.MsgTx
+				rawTxHex, err := json.Marshal(rawTxResult)
+				if err != nil {
+					return err
+				}
+
+				var msgTx wire.MsgTx
+				err = msgTx.Deserialize(bytes.NewReader(rawTxHex))
+				if err != nil {
+					return err
+				}
+				stakingTx = &msgTx
+			} else {
+				return err
+			}
 		}
 
 		covenantCommitteePks, err := parseCovenantKeysFromSlice(mustGetStringSliceFlag(cmd, FlagCovenantCommitteePks))
@@ -275,40 +363,13 @@ var createWithdrawCmd = &cobra.Command{
 		// witness
 		// Note this signing approach works only with legacy bitcoind wallets as
 		// in new desciptor wallets we cannot dump private key from address
-		host, err := cmd.Flags().GetString(FlagStakerWalletAddressHost)
-
-		if err != nil {
-			return err
-		}
-
-		if host == "" {
-			return nil
-		}
-
-		rpcUser, err := cmd.Flags().GetString(FlagStakerWalletRpcUser)
-
-		if err != nil {
-			return err
-		}
-
-		rpcPass, err := cmd.Flags().GetString(FlagStakerWalletRpcPass)
+		client, _, err := parseRPCFlagsAndGetBTCClient(cmd, btcParams)
 
 		if err != nil {
 			return err
 		}
 
 		passphrase, err := cmd.Flags().GetString(FlagWalletPassphrase)
-
-		if err != nil {
-			return err
-		}
-
-		client, err := btcclient.NewBtcClient(&config.BtcConfig{
-			Host:    host,
-			User:    rpcUser,
-			Pass:    rpcPass,
-			Network: btcParams.Name,
-		})
 
 		if err != nil {
 			return err
