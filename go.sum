@@ -279,8 +279,6 @@ github.com/aws/aws-sdk-go v1.44.122/go.mod h1:y4AeaBuwd2Lk+GepC1E9v0qOiTws0MIWAX
 github.com/aws/aws-sdk-go v1.44.312 h1:llrElfzeqG/YOLFFKjg1xNpZCFJ2xraIi3PqSuP+95k=
 github.com/aws/aws-sdk-go v1.44.312/go.mod h1:aVsgQcEevwlmQ7qHE9I3h+dtQgpqhFB+i8Phjh7fkwI=
 github.com/aws/aws-sdk-go-v2 v0.18.0/go.mod h1:JWVYvqSMppoMJC0x5wdwiImzgXTI9FuZwxzkQq9wy+g=
-github.com/babylonlabs-io/babylon v0.11.0 h1:gRJEkjgy3M9bGSY7VjusA84qn6ca8hXa78ss5Z8D3Cc=
-github.com/babylonlabs-io/babylon v0.11.0/go.mod h1:ZOrTde9vs2xoqGTFw4xhupu2CMulnpywiuk0eh4kPOw=
 github.com/babylonlabs-io/covenant-signer v0.2.11 h1:lQiT5TR2ob0Sky99URhpqrfqImJw14gP63ASd2UJwaE=
 github.com/babylonlabs-io/covenant-signer v0.2.11/go.mod h1:ju9+U2wtIhklSOwTxp+3NA+S/sC4gak9+DeyK9qQi80=
 github.com/babylonlabs-io/networks/parameters v0.2.2 h1:TCu39fZvjX5f6ZZrjhYe54M6wWxglNewuKu56yE+zrc=
@@ -1140,6 +1138,8 @@ github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZN
 github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 h1:Jamvg5psRIccs7FGNTlIRMkT8wgtp5eCXdBlqhYGL6U=
 github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/posener/complete v1.1.1/go.mod h1:em0nMJCgc9GFtwrmVmEMR/ZL6WyhyjMBndrE9hABlRI=
+github.com/prasincs/babylon v0.0.0-20241111190154-d74c7c4ae894 h1:NS43c67pGCJciSEttNEGs0ayhP7MEMvIfPmACOTlD9Q=
+github.com/prasincs/babylon v0.0.0-20241111190154-d74c7c4ae894/go.mod h1:ZOrTde9vs2xoqGTFw4xhupu2CMulnpywiuk0eh4kPOw=
 github.com/prometheus/client_golang v0.9.1/go.mod h1:7SWBe2y4D6OKWSNQJUaRYU/AaXPKyh/dDVn+NZz0KFw=
 github.com/prometheus/client_golang v0.9.3-0.20190127221311-3c4408c8b829/go.mod h1:p2iRAGwDERtqlqzRXnrOVns+ignqQo//hLXqYxZYVNs=
 github.com/prometheus/client_golang v1.0.0/go.mod h1:db9x61etRT2tGnBNRi70OPL5FsnadC4Ky3P0J6CfImo=
