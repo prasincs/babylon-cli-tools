@@ -329,4 +329,4 @@ require (
 
 require dario.cat/mergo v1.0.0 // indirect
 
-replace github.com/babylonlabs-io/babylon v0.11.0 => github.com/prasincs/babylon v0.0.0-20241111190154-d74c7c4ae894
+replace github.com/babylonlabs-io/babylon v0.11.0 => github.com/prasincs/babylon v0.0.0-20241111194353-f480d778165e
